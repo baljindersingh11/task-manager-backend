@@ -1,6 +1,6 @@
 const Task = require('../models/Task');
 
-const createTask = async (req, res) => {
+const createTask = async (req, res, next) => {
 
     try {
 
@@ -23,35 +23,53 @@ const createTask = async (req, res) => {
 
     } catch (error) {
 
-        res.status(500).json({
-            message: error.message
-        });
+        next(error);
 
     }
 
 };
 
-const getTasks = async (req, res) => {
+const getTasks = async (req, res, next) => {
 
     try {
 
+        const { sortBy } = req.query;
+
         const tasks = await Task.find({
             user: req.user.id
-        });
+        }).sortTasks(sortBy);
 
         res.status(200).json(tasks);
 
     } catch (error) {
 
-        res.status(500).json({
-            message: error.message
-        });
+        next(error);
 
     }
 
 };
 
-const updateTask = async (req, res) => {
+const getTaskStats = async (req, res, next) => {
+
+    try {
+
+        const [stats] = await Task.getUserTaskStats(req.user.id);
+
+        res.status(200).json(stats || {
+            total: 0,
+            completed: 0,
+            pending: 0
+        });
+
+    } catch (error) {
+
+        next(error);
+
+    }
+
+};
+
+const updateTask = async (req, res, next) => {
 
     try {
 
@@ -79,15 +97,13 @@ const updateTask = async (req, res) => {
 
     } catch (error) {
 
-        res.status(500).json({
-            message: error.message
-        });
+        next(error);
 
     }
 
 };
 
-const deleteTask = async (req, res) => {
+const deleteTask = async (req, res, next) => {
 
     try {
 
@@ -114,9 +130,7 @@ const deleteTask = async (req, res) => {
 
     } catch (error) {
 
-        res.status(500).json({
-            message: error.message
-        });
+        next(error);
 
     }
 
@@ -125,6 +139,7 @@ const deleteTask = async (req, res) => {
 module.exports = {
     createTask,
     getTasks,
+    getTaskStats,
     updateTask,
     deleteTask
 };

@@ -2,7 +2,7 @@ const jwt = require('jsonwebtoken');
 const User = require('../models/User');
 const bcrypt = require('bcryptjs');
 
-const signup = async (req, res) => {
+const signup = async (req, res, next) => {
 
     try {
 
@@ -42,14 +42,12 @@ const signup = async (req, res) => {
 
     } catch (error) {
 
-        res.status(500).json({
-            message: error.message
-        });
+        next(error);
 
     }
 
 };
-const login = async (req, res) => {
+const login = async (req, res, next) => {
 
     try {
 
@@ -93,9 +91,7 @@ const login = async (req, res) => {
 
     } catch (error) {
 
-        res.status(500).json({
-            message: error.message
-        });
+        next(error);
 
     }
 
