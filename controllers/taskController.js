@@ -4,7 +4,7 @@ const createTask = async (req, res, next) => {
 
     try {
 
-        const { title } = req.body || {};
+        const { title, dueDate } = req.body || {};
 
         if (!title) {
             return res.status(400).json({
@@ -14,6 +14,7 @@ const createTask = async (req, res, next) => {
 
         const newTask = new Task({
             title,
+            dueDate: dueDate || undefined,
             user: req.user.id
         });
 
@@ -90,6 +91,10 @@ const updateTask = async (req, res, next) => {
 
         task.title = req.body.title || task.title;
         task.completed = req.body.completed ?? task.completed;
+
+        if (Object.prototype.hasOwnProperty.call(req.body, 'dueDate')) {
+            task.dueDate = req.body.dueDate || null;
+        }
 
         const updatedTask = await task.save();
 
